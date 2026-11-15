@@ -1,21 +1,89 @@
 @import "tailwindcss";
 
 @theme {
-  /* dark F1 theme — chart chrome tokens from validated palette */
+  /* F1 brand — see docs/design.md */
   --color-f1: #e10600;
-  --color-f1-soft: #e66767;
-  --color-page: #0d0d0d;
-  --color-surface: #1a1a19;
+  --color-carbon: #15151e;
+  --color-surface: #1c1c28;
+  --color-hairline: #2b2b3a;
+  --color-baseline: #3a3a4c;
   --color-ink: #ffffff;
-  --color-ink-2: #c3c2b7;
-  --color-ink-muted: #898781;
-  --color-hairline: #2c2c2a;
-  --color-baseline: #383835;
-  --color-agree: #3987e5;
+  --color-ink-2: #c8c8d2;
+  --color-ink-muted: #7a7a85;
+  --color-chart-red: #e66767;
+  --color-chart-agree: #3987e5;
+  --font-display: "Chakra Petch", "Malgun Gothic", "Apple SD Gothic Neo",
+    "Microsoft YaHei", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", "Malgun Gothic",
+    "Apple SD Gothic Neo", "Microsoft YaHei", sans-serif;
 }
 
 body {
-  @apply bg-page text-ink antialiased;
-  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic",
-    "Apple SD Gothic Neo", sans-serif;
+  @apply bg-carbon text-ink antialiased;
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* F1 signature cut corners — two opposite corners beveled */
+.cut-corner {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+.cut-corner-sm {
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+/* speed-slant headline */
+.slant {
+  transform: skewX(-4deg);
+}
+
+/* question transitions */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(36px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-36px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.anim-next { animation: slide-in-right 280ms ease-out; }
+.anim-back { animation: slide-in-left 280ms ease-out; }
+
+/* checkered flag wave on finish */
+@keyframes flag-wave {
+  0%, 100% { transform: skewX(-8deg) scaleY(1); }
+  50% { transform: skewX(8deg) scaleY(0.94); }
+}
+.checkered {
+  background-image:
+    linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+    linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+  background-color: #15151e;
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  animation: flag-wave 1.2s ease-in-out infinite;
+}
+
+/* option select wash */
+.opt {
+  transition: border-color 180ms, background-color 180ms, transform 120ms;
+}
+.opt:active {
+  transform: scale(0.985);
+}
+
+/* bar grow-in (admin charts) */
+@keyframes bar-grow {
+  from { width: 0 !important; }
+}
+.bar-grow {
+  animation: bar-grow 400ms ease-out;
+}
+
+/* red glow on primary CTA */
+.glow {
+  box-shadow: 0 0 24px rgba(225, 6, 0, 0.35);
 }
