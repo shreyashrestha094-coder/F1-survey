@@ -171,7 +171,7 @@ This survey is run as an **anonymous** academic survey. The following rules are 
    - **Timestamp** — set by the server (UTC), used only in aggregate (responses per day).
 3. **Proportionality.** Only fields the analysis needs are stored. Nothing else is logged — no cookies for tracking, no third-party analytics, no fingerprinting scripts, no referrer tagging.
 4. **Purpose limitation.** Data is used solely for this class project's analysis. It will not be published per-row, shared with third parties, or used for any other purpose.
-5. **Access control.** The admin dashboard (viewing raw rows including IPs) is password-gated, and the password lives only with the organizer. Respondents can never see other respondents' data.
+5. **Access control.** The admin dashboard (viewing raw rows including IPs) has no visible link on the survey site — it lives behind an unlisted route (`#/admin`, also reachable via `/admin` through the 404-page shim) and is password-gated; the password lives only with the organizer. Respondents can never see other respondents' data.
 6. **Immutability for integrity, deletion by the organizer.** The public API cannot update or delete rows (protects data from tampering). The organizer can delete entries (e.g., test rows) from the Supabase dashboard.
 7. **Retention.** Data is kept only as long as the project needs it (through grading); the table can then be dropped from the Supabase dashboard.
 8. **Honest disclosure.** The intro screen tells respondents the survey is anonymous and used for a class project. IP capture is for duplicate/abuse detection and is disclosed here.
@@ -188,6 +188,8 @@ app/
 ├── index.html                  # entry, loads fonts + root div
 ├── vite.config.js              # build config, base path for GitHub Pages
 ├── supabase-setup.sql          # database schema + RLS policies (run once)
+├── public/404.html             # SPA shim: unknown paths redirect into the hash
+│                               #   router — /F1-survey/admin → /F1-survey/#/admin
 ├── docs/design.md              # brand & design guidelines (colors, type, motion)
 ├── .github/workflows/deploy.yml# CI: build + deploy to GitHub Pages on push
 ├── public/images/              # static images (hero photo, texture)
