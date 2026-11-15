@@ -31,7 +31,7 @@ export default function RaceProgress({ index, total = questions.length, lang }) 
     const L = path.getTotalLength()
     setDots(
       Array.from({ length: total }, (_, i) => {
-        const p = path.getPointAtLength(L * fracFor(i))
+        const p = path.getPointAtLength(L * fracFor(i, total))
         return { x: p.x, y: p.y }
       }),
     )
