@@ -28,7 +28,9 @@ async function supabaseFetch(path, options = {}) {
     },
   })
   if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`)
-  return res.status === 204 ? null : res.json()
+  // 201 with Prefer: return=minimal (and 204) return an empty body
+  const text = await res.text()
+  return text ? JSON.parse(text) : null
 }
 
 // Submit one survey response. `answers` is { q1: 2, q2: 5, ... } (1-based option numbers).
