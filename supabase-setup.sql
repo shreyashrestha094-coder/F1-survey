@@ -30,3 +30,21 @@ alter table responses add column if not exists respondent_name text;
 
 -- Migration: source attribution (?src=kakao|zalo|...)
 alter table responses add column if not exists src text;
+
+-- Migration: server-side validation constraints (public API accepts anything
+-- the client sends, so real limits must live in the database)
+alter table responses drop constraint if exists responses_len_check;
+alter table responses
+  add constraint responses_len_check check (
+    (q9 is null or char_length(q9) <= 1000) and
+    (respondent_name is null or char_length(respondent_name) <= 100) and
+    (q1 between 1 and 6 or q1 is null) and
+    (q2 between 1 and 6 or q2 is null) and
+    (q3 between 1 and 6 or q3 is null) and
+    (q4 between 1 or q4 between 1 and 6 or q4 is null) and
+    (q5 between 1 and 5 or q5 is null) and
+    (q6 between 1 and 5 or q6 is null) and
+    (q7 between 1 and 5 or q7 is null) and
+    (q8 between 1 and 6 or q8 is null) and
+    (src is null or char_length(src) <= 32)
+  );

@@ -163,7 +163,10 @@ function Admin({ lang, onLogout }) {
       'src',
     ]
     const cell = (v) => {
-      const s = String(v ?? '')
+      let s = String(v ?? '')
+      // CSV formula-injection guard: neutralize cells that Excel/Sheets
+      // would execute as formulas (=, +, -, @ prefixes, tab/CR starts)
+      if (/^[+=@\-\t\r]/.test(s)) s = `'${s}`
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
     }
     const lines = rows.map((r) => {
