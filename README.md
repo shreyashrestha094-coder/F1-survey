@@ -1,6 +1,6 @@
 # F1 World Championship Survey
 
-A bilingual (5-language) survey web application that asks one research question: **what matters more for winning the F1 World Championship — driver skill, or team performance?** Respondents answer 8 questions on any device; every submission is stored in a cloud database with technical metadata (IP address, timestamp), and the organizer reviews results live in a password-protected admin dashboard.
+A bilingual (5-language) survey web application that asks one research question: **what matters more for winning the F1 World Championship — driver skill, or team performance?** Respondents answer 8 choice questions plus one optional open-ended question (feedback + optional name) on any device; every submission is stored in a cloud database with technical metadata (IP address, timestamp), and the organizer reviews results live in a hidden, password-protected admin dashboard.
 
 > Class project — built to demonstrate a complete, real-world data-collection pipeline: frontend → REST API → managed Postgres → aggregation → export.
 
@@ -49,7 +49,7 @@ A bilingual (5-language) survey web application that asks one research question:
 ┌──────────────────────────────────────────┐
 │ PostgreSQL table: public.responses       │
 │  id | created_at | ip_address |          │
-│  user_agent | q1…q8                      │
+│  user_agent | q1…q8 | q9 | name          │
 └──────────────────────────────────────────┘
 ```
 
@@ -65,21 +65,24 @@ A bilingual (5-language) survey web application that asks one research question:
    - Motion respects the OS `prefers-reduced-motion` setting.
    - Progress (current question + answers) is saved to `localStorage`, so an accidental reload resumes at the first unanswered question instead of restarting.
 3. **Submit** — the browser assembles the payload and writes it to Supabase (Section 4).
-4. **Done** — checkered-flag animation + "FINISH" stamp. A copy of the respondent's own answers can be downloaded as JSON. Nothing identifiable is shown or asked.
+4. **Done** — checkered-flag animation + "FINISH" stamp. A copy of the respondent's own answers can be downloaded as JSON. The only personal field in the entire survey is the optional name on the final open question.
 
 ## 4. Data Collection & Processing Flow (step by step)
 
 Each submission goes through this exact pipeline:
 
 ```
-[1] Respondent answers all 8 questions
+[1] Respondent answers all 8 choice questions, then an optional open
+    question (name + feedback message)
         │  answers = { q1: 2, q2: 5, ... }   (values are 1-based option numbers)
+        │  extras   = { q9: "...", respondent_name: "..." }  (either may be null)
         ▼
 [2] Browser fetches the public IP
         │  GET https://api.ipify.org?format=json  →  "203.0.113.45"
         ▼
 [3] Browser builds one database row
         │  { q1: 2, ..., q8: 5,
+        │    q9: "..." | null, respondent_name: "..." | null,
         │    ip_address: "203.0.113.45",
         │    user_agent: "<browser string>" }
         │  (created_at is set by the database itself, see Section 6)
@@ -115,7 +118,7 @@ Each submission goes through this exact pipeline:
          - Q1–Q4, Q8 → horizontal bar chart of option counts + %
          - Q5–Q7 (Likert agree/disagree) → diverging stacked bar
            centered on "neutral" (red = disagree, gray = neutral, blue = agree)
-         - Respondents table: timestamp | IP | answers Q1–Q8
+         - Respondents table: timestamp | IP | answers Q1–Q8 | name | feedback
         ▼
 [11] "Export CSV" builds a UTF-8 CSV in the browser and downloads it.
      Columns: created_at, ip_address, q1..q8 (numeric option codes for
