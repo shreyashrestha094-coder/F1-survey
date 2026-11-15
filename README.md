@@ -115,6 +115,9 @@ Each submission goes through this exact pipeline:
          - Respondents table: timestamp | IP | answers Q1–Q8
         ▼
 [11] "Export CSV" builds a UTF-8 CSV in the browser and downloads it.
+     Columns: created_at, ip_address, q1..q8 (numeric option codes for
+     analysis), then q1_en..q8_en and q1_kr..q8_kr (the answer text in
+     English and Korean) so the file is readable without a codebook.
      Analysis (e.g., SPSS / Excel / Python) uses this file.
 ```
 

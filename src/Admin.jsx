@@ -147,11 +147,33 @@ function Admin({ lang, onLogout }) {
   }, [rows])
 
   const exportCsv = () => {
-    const header = 'created_at,ip_address,q1,q2,q3,q4,q5,q6,q7,q8'
-    const lines = rows.map((r) =>
-      [r.created_at, r.ip_address, r.q1, r.q2, r.q3, r.q4, r.q5, r.q6, r.q7, r.q8].join(','),
-    )
-    const blob = new Blob(['﻿' + [header, ...lines].join('\n')], { type: 'text/csv;charset=utf-8' })
+    // language-independent codes first (q1..q8), then readable answer text
+    // (English + Korean) so the file works for both analysis and reading
+    const codes = questions.map((q) => q.id)
+    const header = [
+      'created_at',
+      'ip_address',
+      ...codes,
+      ...codes.map((c) => `${c}_en`),
+      ...codes.map((c) => `${c}_kr`),
+    ]
+    const cell = (v) => {
+      const s = String(v ?? '')
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+    }
+    const lines = rows.map((r) => {
+      const numeric = codes.map((c) => r[c] ?? '')
+      const en = questions.map((q) => {
+        const n = r[q.id]
+        return n ? getOptions(q, 'en')[n - 1]?.label ?? '' : ''
+      })
+      const kr = questions.map((q) => {
+        const n = r[q.id]
+        return n ? getOptions(q, 'kr')[n - 1]?.label ?? '' : ''
+      })
+      return [r.created_at, r.ip_address, ...numeric, ...en, ...kr].map(cell).join(',')
+    })
+    const blob = new Blob(['﻿' + [header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
