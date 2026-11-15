@@ -223,7 +223,20 @@ npm run build      # production build → dist/
 npm run preview    # serve the production build locally
 ```
 
-Backend setup: create a free Supabase project → run `supabase-setup.sql` in the SQL Editor → paste the project URL and publishable (anon) key into `src/supabase.js`. Deployment is automatic on push to `main` (GitHub Actions → GitHub Pages).
+Backend setup: create a free Supabase project → run `supabase-setup.sql` in the SQL Editor → configure three build-time environment variables:
+
+| Variable | Where it comes from |
+|---|---|
+| `VITE_SUPABASE_URL` | Supabase Dashboard → Settings → API → Project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API → publishable (anon) key |
+| `VITE_ADMIN_PASSWORD` | the organizer's admin-dashboard password |
+
+- **Local dev:** create a `.env` file in the project root with the three variables (gitignored, never committed). `npm run build` / `npm run dev` picks it up automatically.
+- **Production (GitHub Pages):** the same three names are stored as GitHub Actions **repository secrets** (Settings → Secrets and variables → Actions) and injected into the build by the deploy workflow. The values never appear in the source repository.
+
+Note on secrecy: these are *build-time* variables — Vite inlines them into the final JavaScript bundle, so anyone can read them in the browser. That is acceptable by design: the Supabase key is a *publishable* key whose access is constrained by Row Level Security, and the admin password is a cosmetic client-side gate (see the limitations in Section 6). A truly secret value would require a server-side component (e.g., a Supabase Edge Function).
+
+Deployment is automatic on push to `main` (GitHub Actions → GitHub Pages).
 
 ## 9. Design Reference
 

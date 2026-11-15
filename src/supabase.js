@@ -1,11 +1,12 @@
 // Supabase configuration.
-// Paste your project's values here after running supabase-setup.sql.
-// The anon key is safe to expose in client code (Row Level Security protects the data).
-export const SUPABASE_URL = 'https://keyljautaaazplavrtqr.supabase.co'
-export const SUPABASE_ANON_KEY = 'sb_publishable_uxsZHKhuqLY_mdhaFEbyvA_-KKTk6sH'
+// Values come from build-time environment variables (Vite inlines them):
+//   - Local dev:   .env file (gitignored) with VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
+//   - CI (Pages):  GitHub Actions secrets of the same names, injected at build
+// The anon key is designed to be public (Row Level Security protects the data).
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-export const supabaseConfigured = () =>
-  !SUPABASE_URL.includes('YOUR-PROJECT-REF') && !SUPABASE_ANON_KEY.includes('YOUR-ANON-KEY')
+export const supabaseConfigured = () => Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
 
 export async function getIpAddress() {
   try {

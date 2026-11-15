@@ -3,7 +3,9 @@ import { questions, getOptions } from './data/questions.js'
 import { ui } from './i18n.js'
 import { fetchResponses, supabaseConfigured } from './supabase.js'
 
-const ADMIN_PASSWORD = 'f1@shreya'
+// Admin password comes from build-time env (see supabase.js note).
+// It is still visible in the public bundle — client-side gates are cosmetic.
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || ''
 
 const LIKERT = ['q5', 'q6', 'q7']
 
