@@ -1,0 +1,98 @@
+export const questions = [
+  {
+    id: 'q1',
+    en: 'How much do you know about F1 (Formula 1)?',
+    kr: 'F1(포뮬러 1)에 대해 얼마나 알고 있나요?',
+    options: [
+      { en: 'I watch F1 often and know it well.', kr: 'F1 경기를 자주 보고 잘 알고 있다.' },
+      { en: 'I know F1 and watch it sometimes.', kr: 'F1을 알고 있고 가끔 본다.' },
+      { en: 'I only know the name.', kr: '이름만 알고 있다.' },
+      { en: 'I know almost nothing about F1.', kr: 'F1에 대해 거의 모른다.' },
+    ],
+  },
+  {
+    id: 'q2',
+    en: 'What are you most interested in F1?',
+    kr: 'F1에서 가장 관심 있는 것은 무엇인가요?',
+    options: [
+      { en: 'Driver skill', kr: '드라이버의 운전 실력' },
+      { en: 'Car speed and technology', kr: '자동차의 속도와 기술' },
+      { en: 'Team strategy and race management', kr: '팀의 전략과 경기 운영' },
+      { en: 'Team brand and history', kr: '팀 브랜드와 역사' },
+      { en: 'Race results and winning', kr: '경기 결과와 우승' },
+    ],
+  },
+  {
+    id: 'q3',
+    en: 'What do you think is most important to become the F1 World Champion?',
+    kr: 'F1 월드 챔피언이 되는 데 가장 중요한 것은 무엇이라고 생각하나요?',
+    options: [
+      { en: 'Driver skill', kr: '드라이버의 운전 실력' },
+      { en: 'Car performance', kr: '자동차의 성능' },
+      { en: 'Team strategy', kr: '팀의 전략' },
+      { en: 'Cooperation between the driver and the team', kr: '드라이버와 팀의 협력' },
+      { en: 'Luck and race conditions', kr: '운과 경기 상황' },
+    ],
+  },
+  {
+    id: 'q4',
+    en: 'Which is more important: driver skill or car performance?',
+    kr: '드라이버의 실력과 자동차의 성능 중 무엇이 더 중요하다고 생각하나요?',
+    options: [
+      { en: 'Driver skill is much more important.', kr: '드라이버의 실력이 훨씬 더 중요하다.' },
+      { en: 'Driver skill is a little more important.', kr: '드라이버의 실력이 조금 더 중요하다.' },
+      { en: 'Both are equally important.', kr: '두 가지가 비슷하게 중요하다.' },
+      { en: 'Car performance is a little more important.', kr: '자동차의 성능이 조금 더 중요하다.' },
+      { en: 'Car performance is much more important.', kr: '자동차의 성능이 훨씬 더 중요하다.' },
+    ],
+  },
+  {
+    id: 'q5',
+    en: 'Do you think a good driver can win with a low-performance car?',
+    kr: '좋은 드라이버는 성능이 낮은 자동차로도 우승할 수 있다고 생각하나요?',
+    options: [
+      { en: 'Strongly agree.', kr: '매우 그렇다.' },
+      { en: 'Agree.', kr: '그렇다.' },
+      { en: 'Neither agree nor disagree.', kr: '보통이다.' },
+      { en: 'Disagree.', kr: '그렇지 않다.' },
+      { en: 'Strongly disagree.', kr: '전혀 그렇지 않다.' },
+    ],
+  },
+  {
+    id: 'q6',
+    en: 'Do you think a good car can help an average driver get good results?',
+    kr: '좋은 자동차는 운전 실력이 보통인 드라이버도 좋은 결과를 내게 할 수 있다고 생각하나요?',
+    options: [
+      { en: 'Strongly agree.', kr: '매우 그렇다.' },
+      { en: 'Agree.', kr: '그렇다.' },
+      { en: 'Neither agree nor disagree.', kr: '보통이다.' },
+      { en: 'Disagree.', kr: '그렇지 않다.' },
+      { en: 'Strongly disagree.', kr: '전혀 그렇지 않다.' },
+    ],
+  },
+  {
+    id: 'q7',
+    en: "Do you think a driver's results can change after moving to another team?",
+    kr: '드라이버가 다른 팀으로 옮기면 경기 결과가 달라질 수 있다고 생각하나요?',
+    options: [
+      { en: 'Strongly agree.', kr: '매우 그렇다.' },
+      { en: 'Agree.', kr: '그렇다.' },
+      { en: 'Neither agree nor disagree.', kr: '보통이다.' },
+      { en: 'Disagree.', kr: '그렇지 않다.' },
+      { en: 'Strongly disagree.', kr: '전혀 그렇지 않다.' },
+    ],
+  },
+  {
+    id: 'q8',
+    en: 'What is most important when you choose or support an F1 team?',
+    kr: 'F1 팀을 선택하거나 응원할 때 가장 중요한 것은 무엇인가요?',
+    options: [
+      { en: 'A driver I like', kr: '좋아하는 드라이버' },
+      { en: 'Car performance', kr: '자동차의 성능' },
+      { en: "The team's winning record", kr: '팀의 우승 기록' },
+      { en: "The team's brand and history", kr: '팀 브랜드와 역사' },
+      { en: "The team's strategy", kr: '팀의 전략' },
+      { en: 'Nothing in particular', kr: '특별히 중요하게 생각하는 것이 없다.' },
+    ],
+  },
+]

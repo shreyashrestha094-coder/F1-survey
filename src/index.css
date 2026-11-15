@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --color-f1: #e10600;
+  --font-display: "Titillium Web", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+
+body {
+  @apply bg-neutral-100 text-neutral-900 antialiased;
+}

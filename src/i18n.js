@@ -1,0 +1,58 @@
+export const ui = {
+  en: {
+    title: 'F1 World Championship Survey',
+    subtitle: 'What matters more: driver skill or team performance?',
+    purposeLabel: 'Purpose',
+    purpose:
+      'To find out what people think is more important for winning the F1 World Championship.',
+    instructionsLabel: 'Instructions',
+    instructions:
+      'Choose one answer for each question. It takes about 2 minutes.',
+    anonymity:
+      'This survey is anonymous. Your answers will only be used for a class project.',
+    start: 'Start Survey',
+    question: 'Question',
+    of: 'of',
+    next: 'Next',
+    back: 'Back',
+    submit: 'Submit',
+    pickOne: 'Choose one answer.',
+    doneTitle: 'Thank you for participating!',
+    doneBody:
+      'Your answers are ready to send. Download the response file (or copy it) and send it back to the survey organizer.',
+    download: 'Download Response File',
+    copy: 'Copy Response',
+    copied: 'Copied!',
+    restart: 'Fill Out Another Response',
+    langName: 'English',
+    otherLang: '한국어',
+    progress: 'Progress',
+  },
+  kr: {
+    title: 'F1 월드 챔피언십 인식 조사',
+    subtitle: '드라이버의 실력과 팀의 성능 중 무엇이 더 중요할까?',
+    purposeLabel: '조사 목적',
+    purpose: '사람들이 F1 월드 챔피언이 되는 데 어떤 요소가 더 중요하다고 생각하는지 알아봅니다.',
+    instructionsLabel: '참여 안내',
+    instructions: '각 질문에서 가장 알맞은 답 하나를 선택해 주세요. 약 2분 정도 걸립니다.',
+    anonymity:
+      '이 설문은 익명으로 진행하며, 답변은 수업 프로젝트에만 사용합니다.',
+    start: '설문 시작',
+    question: '질문',
+    of: '/',
+    next: '다음',
+    back: '이전',
+    submit: '제출',
+    pickOne: '답 하나를 선택해 주세요.',
+    doneTitle: '설문에 참여해 주셔서 감사합니다.',
+    doneBody:
+      '답변 파일을 다운로드(또는 복사)해서 조사 담당자에게 보내 주세요.',
+    download: '답변 파일 다운로드',
+    copy: '답변 복사',
+    copied: '복사 완료!',
+    restart: '새 답변 작성하기',
+    langName: '한국어',
+    otherLang: 'English',
+    progress: '진행 상황',
+  },
+}
