@@ -34,6 +34,17 @@ async function supabaseFetch(path, options = {}) {
   return text ? JSON.parse(text) : null
 }
 
+// Distribution-source attribution: ?src=kakao|zalo|... on the share link.
+// Saved on first visit; sent with the submission.
+export function getSource() {
+  const fromUrl = new URLSearchParams(window.location.search).get('src')
+  if (fromUrl) {
+    localStorage.setItem('f1-src', fromUrl)
+    return fromUrl
+  }
+  return localStorage.getItem('f1-src')
+}
+
 // Submit one survey response. `answers` is { q1: 2, q2: 5, ... } (1-based option numbers).
 // `extras` carries the optional open question: { q9, respondent_name }.
 export async function submitResponse(answers, extras = {}) {
@@ -41,6 +52,7 @@ export async function submitResponse(answers, extras = {}) {
   const row = {
     ...answers,
     ...extras,
+    src: getSource(),
     ip_address: ip,
     user_agent: navigator.userAgent,
   }

@@ -160,6 +160,7 @@ function Admin({ lang, onLogout }) {
       ...codes.map((c) => `${c}_kr`),
       'q9_feedback',
       'respondent_name',
+      'src',
     ]
     const cell = (v) => {
       const s = String(v ?? '')
@@ -175,7 +176,7 @@ function Admin({ lang, onLogout }) {
         const n = r[q.id]
         return n ? getOptions(q, 'kr')[n - 1]?.label ?? '' : ''
       })
-      return [r.created_at, r.ip_address, ...numeric, ...en, ...kr, r.q9 ?? '', r.respondent_name ?? '']
+      return [r.created_at, r.ip_address, ...numeric, ...en, ...kr, r.q9 ?? '', r.respondent_name ?? '', r.src ?? '']
         .map(cell)
         .join(',')
     })

@@ -124,7 +124,10 @@ Each submission goes through this exact pipeline:
      Columns: created_at, ip_address, q1..q8 (numeric option codes for
      analysis), then q1_en..q8_en and q1_kr..q8_kr (the answer text in
      English and Korean) so the file is readable without a codebook,
-     plus q9_feedback and respondent_name from the open question.
+     plus q9_feedback, respondent_name, and src (distribution source:
+     share links are tagged `?src=kakao`, `?src=zalo`, … and the tag is
+     stored with the submission — lets the organizer see which channel
+     brought each response).
      Analysis (e.g., SPSS / Excel / Python) uses this file.
 ```
 

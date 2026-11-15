@@ -27,3 +27,6 @@ create policy "anon can select"
 -- Migration: open-ended final question (name + feedback)
 alter table responses add column if not exists q9 text;
 alter table responses add column if not exists respondent_name text;
+
+-- Migration: source attribution (?src=kakao|zalo|...)
+alter table responses add column if not exists src text;
