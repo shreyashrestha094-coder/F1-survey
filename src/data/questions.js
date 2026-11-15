@@ -17,6 +17,14 @@ const LIKERT_SCALE = {
 
 const likert = () => LIKERT_SCALE
 
+// Options are either a per-language object (Likert) or an array of
+// per-language label objects. Returns a plain array of label objects.
+export function getOptions(q, lang) {
+  if (Array.isArray(q.options)) return q.options
+  const list = q.options[lang] || q.options.en
+  return list.map((label) => ({ label }))
+}
+
 export const questions = [
   {
     id: 'q1',

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { questions } from './data/questions.js'
+import { questions, getOptions } from './data/questions.js'
 import { ui } from './i18n.js'
 import { submitResponse } from './supabase.js'
 import { TopBar } from './components.jsx'
@@ -104,7 +104,7 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
     const onKey = (e) => {
       if (e.target.tagName === 'INPUT') return
       const n = parseInt(e.key, 10)
-      if (n >= 1 && n <= q.options.length) handleSelect(n - 1)
+      if (n >= 1 && n <= getOptions(q, lang).length) handleSelect(n - 1)
       else if (e.key === 'ArrowRight' && !isLast) go(index + 1)
       else if (e.key === 'ArrowLeft' && index > 0) go(index - 1)
       else if (e.key === 'Enter') handleNext()
@@ -147,9 +147,9 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
         </h2>
 
         <div className="mt-6 space-y-3">
-          {q.options.map((opt, i) => {
+          {getOptions(q, lang).map((opt, i) => {
             const active = selected === i
-            const label = lang === 'en' ? opt.en : lang === 'kr' ? opt.kr : lang === 'zh' ? opt.zh : lang === 'vi' ? opt.vi : opt.mn
+            const label = opt.label ?? (lang === 'en' ? opt.en : lang === 'kr' ? opt.kr : lang === 'zh' ? opt.zh : lang === 'vi' ? opt.vi : opt.mn)
             return (
               <button
                 key={i}

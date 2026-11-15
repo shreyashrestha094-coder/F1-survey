@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { questions } from './data/questions.js'
+import { questions, getOptions } from './data/questions.js'
 import { ui } from './i18n.js'
 import { fetchResponses, supabaseConfigured } from './supabase.js'
 
@@ -39,14 +39,14 @@ function StatTile({ label, value }) {
 }
 
 function BarChart({ q, lang, counts, total }) {
-  const t = ui[lang]
-  const text = (o) => (lang === 'en' ? o.en : lang === 'kr' ? o.kr : lang === 'zh' ? o.zh : lang === 'vi' ? o.vi : o.mn)
+  const text = (o) => (o.label ?? (lang === 'en' ? o.en : lang === 'kr' ? o.kr : lang === 'zh' ? o.zh : lang === 'vi' ? o.vi : o.mn))
+  const opts = getOptions(q, lang)
   const max = Math.max(...counts, 1)
   return (
     <div className="border border-hairline bg-surface p-5">
       <h3 className="font-display text-sm font-bold leading-snug">{text(q)}</h3>
       <div className="mt-4 space-y-2.5">
-        {q.options.map((opt, i) => {
+        {opts.map((opt, i) => {
           const count = counts[i]
           const pct = total ? Math.round((count / total) * 100) : 0
           return (
@@ -224,7 +224,7 @@ function Admin({ lang, onLogout }) {
               </h2>
               <div className="mt-4 grid gap-4 lg:grid-cols-2">
                 {questions.map((q) => {
-                  const counts = q.options.map(
+                  const counts = getOptions(q, lang).map(
                     (_, i) => rows.filter((r) => r[q.id] === i + 1).length,
                   )
                   return LIKERT.includes(q.id) ? (
