@@ -1,8 +1,8 @@
 // Supabase configuration.
 // Paste your project's values here after running supabase-setup.sql.
 // The anon key is safe to expose in client code (Row Level Security protects the data).
-export const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co'
-export const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+export const SUPABASE_URL = 'https://keyljautaaazplavrtqr.supabase.co'
+export const SUPABASE_ANON_KEY = 'sb_publishable_uxsZHKhuqLY_mdhaFEbyvA_-KKTk6sH'
 
 export const supabaseConfigured = () =>
   !SUPABASE_URL.includes('YOUR-PROJECT-REF') && !SUPABASE_ANON_KEY.includes('YOUR-ANON-KEY')
