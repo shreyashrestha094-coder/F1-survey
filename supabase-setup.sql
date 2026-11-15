@@ -41,7 +41,7 @@ alter table responses
     (q1 between 1 and 6 or q1 is null) and
     (q2 between 1 and 6 or q2 is null) and
     (q3 between 1 and 6 or q3 is null) and
-    (q4 between 1 or q4 between 1 and 6 or q4 is null) and
+    (q4 between 1 and 6 or q4 is null) and
     (q5 between 1 and 5 or q5 is null) and
     (q6 between 1 and 5 or q6 is null) and
     (q7 between 1 and 5 or q7 is null) and
