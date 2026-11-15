@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
 @theme {
+  /* dark F1 theme — chart chrome tokens from validated palette */
   --color-f1: #e10600;
-  --font-display: "Titillium Web", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --color-f1-soft: #e66767;
+  --color-page: #0d0d0d;
+  --color-surface: #1a1a19;
+  --color-ink: #ffffff;
+  --color-ink-2: #c3c2b7;
+  --color-ink-muted: #898781;
+  --color-hairline: #2c2c2a;
+  --color-baseline: #383835;
+  --color-agree: #3987e5;
 }
 
 body {
-  @apply bg-neutral-100 text-neutral-900 antialiased;
+  @apply bg-page text-ink antialiased;
+  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic",
+    "Apple SD Gothic Neo", sans-serif;
 }

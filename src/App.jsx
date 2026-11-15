@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { questions } from './data/questions.js'
 import { ui } from './i18n.js'
+import { submitResponse } from './supabase.js'
+import { AdminGate } from './Admin.jsx'
 
 function LangToggle({ lang, setLang }) {
   return (
     <button
       onClick={() => setLang(lang === 'en' ? 'kr' : 'en')}
-      className="rounded-full border border-neutral-300 bg-white px-4 py-1.5 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-f1 hover:text-f1"
+      className="rounded-full border border-hairline bg-surface/80 px-4 py-1.5 text-sm font-semibold text-ink-2 backdrop-blur transition hover:border-f1-soft hover:text-ink"
     >
       {ui[lang].otherLang}
     </button>
@@ -20,42 +22,60 @@ function Intro({ lang, setLang, onStart }) {
       <div className="flex justify-end">
         <LangToggle lang={lang} setLang={setLang} />
       </div>
-      <div className="mt-auto mb-auto rounded-2xl bg-white p-8 shadow-lg sm:p-12">
-        <p className="text-sm font-bold uppercase tracking-widest text-f1">
-          {lang === 'en' ? 'Survey' : '설문조사'}
-        </p>
-        <h1 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">
-          {t.title}
-        </h1>
-        <p className="mt-3 text-lg text-neutral-600">{t.subtitle}</p>
-
-        <div className="mt-8 space-y-5">
-          <div>
-            <h2 className="font-bold text-neutral-900">{t.purposeLabel}</h2>
-            <p className="mt-1 text-neutral-600">{t.purpose}</p>
+      <div className="mb-auto mt-auto">
+        <div className="overflow-hidden rounded-2xl border border-hairline bg-surface shadow-2xl">
+          {/* hero image */}
+          <div className="relative h-44 sm:h-56">
+            <img
+              src="/F1-survey/images/night-blur.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-[50%_28%]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-f1-soft">
+                {lang === 'en' ? 'Survey' : '설문조사'}
+              </p>
+              <h1 className="mt-1 text-2xl font-extrabold leading-tight sm:text-3xl">{t.title}</h1>
+            </div>
           </div>
-          <div>
-            <h2 className="font-bold text-neutral-900">{t.instructionsLabel}</h2>
-            <p className="mt-1 text-neutral-600">{t.instructions}</p>
+
+          <div className="p-6 sm:p-8">
+            <p className="text-lg font-semibold text-ink">{t.subtitle}</p>
+
+            <div className="mt-6 space-y-5">
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-ink-muted">
+                  {t.purposeLabel}
+                </h2>
+                <p className="mt-1 text-ink-2">{t.purpose}</p>
+              </div>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-ink-muted">
+                  {t.instructionsLabel}
+                </h2>
+                <p className="mt-1 text-ink-2">{t.instructions}</p>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-hairline bg-page px-5 py-4 text-sm text-ink-2">
+              ※ {t.anonymity}
+            </div>
+
+            <button
+              onClick={onStart}
+              className="mt-6 w-full rounded-xl bg-f1 py-4 text-lg font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.99]"
+            >
+              {t.start}
+            </button>
           </div>
         </div>
-
-        <div className="mt-8 rounded-xl bg-red-50 px-5 py-4 text-sm text-red-800">
-          ※ {t.anonymity}
-        </div>
-
-        <button
-          onClick={onStart}
-          className="mt-8 w-full rounded-xl bg-f1 py-4 text-lg font-bold text-white shadow-md transition hover:brightness-110 active:scale-[0.99]"
-        >
-          {t.start}
-        </button>
       </div>
     </div>
   )
 }
 
-function Survey({ lang, setLang, answers, setAnswers, onSubmit }) {
+function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   const t = ui[lang]
   const [index, setIndex] = useState(0)
   const [showError, setShowError] = useState(false)
@@ -88,20 +108,20 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit }) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-8">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-neutral-500">
+        <span className="text-sm font-semibold tabular-nums text-ink-muted">
           {t.question} {index + 1} {t.of} {questions.length}
         </span>
         <LangToggle lang={lang} setLang={setLang} />
       </div>
 
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-200">
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-hairline">
         <div
           className="h-full rounded-full bg-f1 transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="mt-8" key={q.id}>
+      <div className="mt-10" key={q.id}>
         <h2 className="text-xl font-bold leading-snug sm:text-2xl">
           {lang === 'en' ? q.en : q.kr}
         </h2>
@@ -115,13 +135,13 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit }) {
                 onClick={() => handleSelect(i)}
                 className={`flex w-full items-center gap-4 rounded-xl border-2 px-5 py-4 text-left transition ${
                   active
-                    ? 'border-f1 bg-red-50 font-semibold text-neutral-900 shadow-sm'
-                    : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400'
+                    ? 'border-f1 bg-f1/10 font-semibold text-ink shadow-md'
+                    : 'border-hairline bg-surface text-ink-2 hover:border-baseline'
                 }`}
               >
                 <span
                   className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold ${
-                    active ? 'border-f1 bg-f1 text-white' : 'border-neutral-300 text-neutral-400'
+                    active ? 'border-f1 bg-f1 text-white' : 'border-baseline text-ink-muted'
                   }`}
                 >
                   {i + 1}
@@ -133,23 +153,24 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit }) {
         </div>
 
         {showError && (
-          <p className="mt-4 text-sm font-semibold text-f1">⚠ {t.pickOne}</p>
+          <p className="mt-4 text-sm font-semibold text-f1-soft">⚠ {t.pickOne}</p>
         )}
 
         <div className="mt-8 flex gap-3">
           {index > 0 && (
             <button
               onClick={() => { setIndex(index - 1); setShowError(false) }}
-              className="rounded-xl border border-neutral-300 bg-white px-6 py-3 font-semibold text-neutral-700 transition hover:border-neutral-500"
+              className="rounded-xl border border-hairline bg-surface px-6 py-3 font-semibold text-ink-2 transition hover:border-baseline"
             >
               {t.back}
             </button>
           )}
           <button
             onClick={handleNext}
-            className="flex-1 rounded-xl bg-f1 py-3 text-lg font-bold text-white shadow-md transition hover:brightness-110 active:scale-[0.99]"
+            disabled={submitting}
+            className="flex-1 rounded-xl bg-f1 py-3 text-lg font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
           >
-            {isLast ? t.submit : t.next}
+            {submitting ? '…' : isLast ? t.submit : t.next}
           </button>
         </div>
       </div>
@@ -196,29 +217,29 @@ function Done({ lang, setLang, answers, onRestart }) {
       <div className="flex justify-end">
         <LangToggle lang={lang} setLang={setLang} />
       </div>
-      <div className="mt-auto mb-auto rounded-2xl bg-white p-8 text-center shadow-lg sm:p-12">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
-          ✓
+      <div className="mb-auto mt-auto rounded-2xl border border-hairline bg-surface p-8 text-center shadow-2xl sm:p-12">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-f1/15 text-3xl">
+          🏁
         </div>
         <h1 className="mt-6 text-2xl font-extrabold sm:text-3xl">{t.doneTitle}</h1>
-        <p className="mx-auto mt-3 max-w-md text-neutral-600">{t.doneBody}</p>
+        <p className="mx-auto mt-3 max-w-md text-ink-2">{t.doneBody}</p>
 
         <div className="mx-auto mt-8 max-w-sm space-y-3">
           <button
             onClick={download}
-            className="w-full rounded-xl bg-f1 py-4 text-lg font-bold text-white shadow-md transition hover:brightness-110 active:scale-[0.99]"
+            className="w-full rounded-xl border border-hairline bg-page py-3 font-semibold text-ink-2 transition hover:border-baseline"
           >
             {t.download}
           </button>
           <button
             onClick={copy}
-            className="w-full rounded-xl border border-neutral-300 bg-white py-3 font-semibold text-neutral-700 transition hover:border-neutral-500"
+            className="w-full py-2 text-sm text-ink-muted underline transition hover:text-ink"
           >
             {copied ? `✓ ${t.copied}` : t.copy}
           </button>
           <button
             onClick={onRestart}
-            className="w-full py-2 text-sm text-neutral-500 underline transition hover:text-neutral-800"
+            className="w-full py-2 text-sm text-ink-muted underline transition hover:text-ink"
           >
             {t.restart}
           </button>
@@ -228,28 +249,94 @@ function Done({ lang, setLang, answers, onRestart }) {
   )
 }
 
+function AdminLink({ lang }) {
+  const t = ui[lang]
+  return (
+    <a
+      href="#/admin"
+      className="fixed bottom-3 right-3 z-10 rounded-full border border-hairline bg-surface/80 px-3 py-1 text-[11px] font-semibold text-ink-muted backdrop-blur transition hover:text-ink"
+    >
+      {t.admin}
+    </a>
+  )
+}
+
 export default function App() {
   const [lang, setLang] = useState('kr')
   const [stage, setStage] = useState('intro') // intro | survey | done
   const [answers, setAnswers] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    const onHash = () => {
+      if (window.location.hash === '#/admin') {
+        setStage('admin')
+      } else {
+        setStage((s) => (s === 'admin' ? 'intro' : s))
+      }
+    }
+    window.addEventListener('hashchange', onHash)
+    onHash()
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    const numbered = Object.fromEntries(
+      questions.map((q) => [q.id, answers[q.id] + 1]),
+    )
+    try {
+      await submitResponse(numbered)
+    } catch (err) {
+      console.error('Submission failed', err)
+    }
+    setSubmitting(false)
+    setStage('done')
+  }
+
+  if (stage === 'admin') {
+    return (
+      <div className="min-h-dvh bg-page">
+        <AdminGate lang={lang} onLogout={() => { window.location.hash = '' }} />
+        <div className="fixed bottom-3 left-3 z-10">
+          <a href="#" className="text-[11px] font-semibold text-ink-muted underline hover:text-ink">
+            ← {ui[lang].title}
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-neutral-100 to-neutral-200">
-      {stage === 'intro' && (
-        <Intro lang={lang} setLang={setLang} onStart={() => setStage('survey')} />
-      )}
-      {stage === 'survey' && (
-        <Survey
-          lang={lang}
-          setLang={setLang}
-          answers={answers}
-          setAnswers={setAnswers}
-          onSubmit={() => setStage('done')}
-        />
-      )}
-      {stage === 'done' && (
-        <Done lang={lang} setLang={setLang} answers={answers} onRestart={() => { setAnswers({}); setStage('intro') }} />
-      )}
+    <div className="min-h-dvh bg-page">
+      {/* subtle texture: aerial track photo, heavily dimmed */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage: 'url(/F1-survey/images/track-aerial.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div className="relative">
+        {stage === 'intro' && (
+          <Intro lang={lang} setLang={setLang} onStart={() => setStage('survey')} />
+        )}
+        {stage === 'survey' && (
+          <Survey
+            lang={lang}
+            setLang={setLang}
+            answers={answers}
+            setAnswers={setAnswers}
+            onSubmit={handleSubmit}
+            submitting={submitting}
+          />
+        )}
+        {stage === 'done' && (
+          <Done lang={lang} setLang={setLang} answers={answers} onRestart={() => { setAnswers({}); setStage('intro') }} />
+        )}
+      </div>
+      <AdminLink lang={lang} />
     </div>
   )
 }
