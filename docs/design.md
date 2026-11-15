@@ -55,11 +55,13 @@ Rules:
 
 | Element | Spec |
 |---|---|
-| Question change | Slide-in-right + fade, 280ms ease-out; back = slide-in-left. |
-| Option select | 180ms — border snaps to red, background washes `f1-red` at 10% opacity, marker dot fills. |
+| Question change | Slide-in-right + fade, 280ms ease-out; back = slide-in-left. Heading focused + scrolled to top each step (a11y). |
+| Option select | 180ms — border snaps to red, background washes `f1-red` at 10%, marker fills, `pop` scale 260ms. |
 | Auto-advance | 180ms hold after select, then advance. |
-| Progress bar | Width animates 300ms; segmented into 8 ticks. |
-| Finish screen | Checkered-flag wave (CSS), 3×3 grid, 1.2s loop. |
+| Invalid Next | Button grayed (`aria-disabled`) until an answer is chosen; clicking shakes it (200ms) + inline coral warning. |
+| Finish screen | Checkered-flag wave + rotated "FINISH" stamp slam (450ms), passport-stamp style. |
+| Resume | Stage + answers persisted to localStorage; reload resumes at first unanswered question. |
+| Motion safety | All decorative motion guarded by `prefers-reduced-motion`. |
 | Admin stat tiles | Count-up on load (600ms). |
 | Admin bars | Grow from 0 width on mount (400ms ease-out). |
 | All hover states | ≤ 200ms; never animate layout of text the user is reading. |

@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { questions, getOptions } from './data/questions.js'
 import { ui } from './i18n.js'
 import { submitResponse } from './supabase.js'
 import { TopBar } from './components.jsx'
 import { AdminGate } from './Admin.jsx'
+import RaceProgress from './RaceProgress.jsx'
+
+const STATE_KEY = 'f1-survey-state'
 
 function Intro({ lang, onStart }) {
   const t = ui[lang]
@@ -63,12 +66,24 @@ function Intro({ lang, onStart }) {
 
 function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   const t = ui[lang]
-  const [index, setIndex] = useState(0)
+  const firstUnanswered = Math.max(
+    questions.findIndex((x) => answers[x.id] === undefined),
+    0,
+  )
+  const [index, setIndex] = useState(firstUnanswered)
   const [dir, setDir] = useState('next')
   const [showError, setShowError] = useState(false)
+  const [shakeNext, setShakeNext] = useState(false)
+  const headingRef = useRef(null)
   const q = questions[index]
   const selected = answers[q.id]
   const isLast = index === questions.length - 1
+
+  // focus heading + scroll top on question change (a11y)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    headingRef.current?.focus({ preventScroll: true })
+  }, [index])
 
   const go = (nextIndex) => {
     setDir(nextIndex > index ? 'next' : 'back')
@@ -90,6 +105,8 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   const handleNext = () => {
     if (selected === undefined) {
       setShowError(true)
+      setShakeNext(true)
+      setTimeout(() => setShakeNext(false), 250)
       return
     }
     if (isLast) {
@@ -118,22 +135,9 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-16">
-      {/* segmented progress */}
-      <div className="mt-6 flex gap-1" aria-hidden>
-        {questions.map((x, i) => {
-          const done = answers[x.id] !== undefined
-          const current = i === index
-          return (
-            <div
-              key={x.id}
-              className={`h-1.5 flex-1 transition-all duration-300 ${
-                current ? 'bg-f1' : done ? 'bg-f1/40' : 'bg-hairline'
-              }`}
-            />
-          )
-        })}
-      </div>
-      <div className="mt-2 flex items-center justify-between">
+      {/* race-track progress: car moves one corner per question */}
+      <RaceProgress index={index} lang={lang} />
+      <div className="mt-1 flex items-center justify-between">
         <span className="font-display text-sm font-semibold tracking-wider text-ink-muted">
           {t.qOf(index + 1, questions.length)}
         </span>
@@ -141,7 +145,11 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
       </div>
 
       <div key={q.id} className={dir === 'next' ? 'anim-next' : 'anim-back'}>
-        <h2 className="font-display mt-10 text-xl font-bold leading-snug sm:text-2xl">
+        <h2
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-display mt-10 text-xl font-bold leading-snug outline-none sm:text-2xl"
+        >
           <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
           {lang === 'en' ? q.en : lang === 'kr' ? q.kr : lang === 'zh' ? q.zh : lang === 'vi' ? q.vi : q.mn}
         </h2>
@@ -156,7 +164,7 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
                 onClick={() => handleSelect(i)}
                 className={`opt cut-corner-sm group flex w-full items-center gap-4 border-2 px-5 py-4 text-left ${
                   active
-                    ? 'border-f1 bg-f1/10 font-semibold text-ink'
+                    ? 'opt-active border-f1 bg-f1/10 font-semibold text-ink'
                     : 'border-hairline bg-surface text-ink-2 hover:border-f1/50 hover:bg-surface/70 hover:pl-6'
                 }`}
               >
@@ -193,7 +201,10 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
           <button
             onClick={handleNext}
             disabled={submitting}
-            className="cut-corner flex-1 bg-f1 py-3.5 font-display text-lg font-bold uppercase italic tracking-wide text-white transition hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
+            aria-disabled={selected === undefined}
+            className={`cut-corner flex-1 bg-f1 py-3.5 font-display text-lg font-bold uppercase italic tracking-wide text-white transition hover:brightness-110 active:scale-[0.99] disabled:opacity-60 ${
+              selected === undefined ? 'opacity-50' : ''
+            } ${shakeNext ? 'shake' : ''}`}
           >
             {submitting ? '…' : isLast ? `${t.submit} →` : `${t.next} →`}
           </button>
@@ -249,8 +260,14 @@ function Done({ lang, answers, onRestart }) {
         {/* checkered flag banner */}
         <div className="checkered h-10 opacity-90" />
         <div className="p-8 sm:p-12">
-          <div className="glow mx-auto flex h-16 w-16 items-center justify-center bg-f1 font-display text-3xl text-white" style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}>
-            ✓
+          <div className="relative mx-auto h-20 w-20">
+            <div className="glow absolute inset-0 flex items-center justify-center bg-f1 font-display text-3xl text-white" style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}>
+              ✓
+            </div>
+            {/* passport-style stamp slam */}
+            <div className="stamp pointer-events-none absolute -right-8 -top-4 border-4 border-white px-2 py-1 font-display text-[11px] font-bold uppercase tracking-widest text-white" style={{ background: 'rgba(21,21,30,0.85)', borderColor: '#e10600' }}>
+              FINISH
+            </div>
           </div>
           <h1 className="font-display mt-6 text-2xl font-bold uppercase italic sm:text-3xl">{t.doneTitle}</h1>
           <p className="mx-auto mt-3 max-w-md text-ink-2">{t.doneBody}</p>
@@ -283,9 +300,23 @@ function Done({ lang, answers, onRestart }) {
 
 export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('f1-lang') || 'kr')
-  const [stage, setStage] = useState('intro') // intro | survey | done | admin
-  const [answers, setAnswers] = useState({})
+  const saved = (() => {
+    try {
+      return JSON.parse(localStorage.getItem(STATE_KEY)) || {}
+    } catch {
+      return {}
+    }
+  })()
+  const [stage, setStage] = useState(saved.stage || 'intro') // intro | survey | done | admin
+  const [answers, setAnswers] = useState(saved.answers || {})
   const [submitting, setSubmitting] = useState(false)
+
+  // resume support: persist stage + answers
+  useEffect(() => {
+    if (stage === 'survey' || stage === 'done') {
+      localStorage.setItem(STATE_KEY, JSON.stringify({ stage, answers }))
+    }
+  }, [stage, answers])
 
   useEffect(() => {
     localStorage.setItem('f1-lang', lang)
@@ -353,7 +384,7 @@ export default function App() {
           />
         )}
         {stage === 'done' && (
-          <Done lang={lang} answers={answers} onRestart={() => { setAnswers({}); setStage('intro') }} />
+          <Done lang={lang} answers={answers} onRestart={() => { localStorage.removeItem(STATE_KEY); setAnswers({}); setStage('intro') }} />
         )}
       </div>
     </div>
