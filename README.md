@@ -192,6 +192,8 @@ This survey is run as an **anonymous** academic survey. The following rules are 
 - The admin password is checked client-side, so it is visible in the public JavaScript bundle. It protects against casual access only. A production version would verify the password server-side (e.g., a Supabase Edge Function) and expose read access only after that check.
 - IP capture is client-side (ipify) and therefore spoofable by a determined user.
 - Because there is no login, true duplicate prevention is impossible — the IP/user-agent heuristics are the only signal.
+- No rate limiting: the public API accepts unlimited inserts (subject to the validation constraint above), so a determined attacker could still flood the table with small valid-looking rows. Acceptable for the survey's scale; a production version would add a captcha or rate-limiting proxy.
+- Server-side input validation *is* enforced: a `CHECK` constraint on the table rejects invalid option numbers and oversized text (`q9` ≤ 1000 chars, name ≤ 100, `src` ≤ 32), so the public API cannot store arbitrary data (see `supabase-setup.sql`).
 
 ## 7. Project Structure
 
