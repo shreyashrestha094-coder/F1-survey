@@ -7,7 +7,7 @@ const H = 96
 const TRACK_D = 'M 24 66 C 110 18, 190 88, 300 54 S 470 16, 576 60'
 
 // fraction along the track for question step i (0-based)
-const fracFor = (i) => Math.min(Math.max((i + 1) / (questions.length + 1), 0.02), 1)
+const fracFor = (i, total) => Math.min(Math.max((i + 1) / (total + 1), 0.02), 1)
 
 function useReducedMotion() {
   return useMemo(
@@ -16,11 +16,11 @@ function useReducedMotion() {
   )
 }
 
-export default function RaceProgress({ index, lang }) {
+export default function RaceProgress({ index, total = questions.length, lang }) {
   const trackRef = useRef(null)
   const carRef = useRef(null)
   const [dots, setDots] = useState([])
-  const targetFrac = fracFor(index)
+  const targetFrac = fracFor(index, total)
   const animFrac = useRef(targetFrac)
   const reduced = useReducedMotion()
 
@@ -30,12 +30,12 @@ export default function RaceProgress({ index, lang }) {
     if (!path) return
     const L = path.getTotalLength()
     setDots(
-      questions.map((_, i) => {
+      Array.from({ length: total }, (_, i) => {
         const p = path.getPointAtLength(L * fracFor(i))
         return { x: p.x, y: p.y }
       }),
     )
-  }, [])
+  }, [total])
 
   // move the car with ease-out; respect reduced motion
   useEffect(() => {

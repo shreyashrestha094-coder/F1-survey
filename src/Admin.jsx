@@ -156,6 +156,8 @@ function Admin({ lang, onLogout }) {
       ...codes,
       ...codes.map((c) => `${c}_en`),
       ...codes.map((c) => `${c}_kr`),
+      'q9_feedback',
+      'respondent_name',
     ]
     const cell = (v) => {
       const s = String(v ?? '')
@@ -171,7 +173,9 @@ function Admin({ lang, onLogout }) {
         const n = r[q.id]
         return n ? getOptions(q, 'kr')[n - 1]?.label ?? '' : ''
       })
-      return [r.created_at, r.ip_address, ...numeric, ...en, ...kr].map(cell).join(',')
+      return [r.created_at, r.ip_address, ...numeric, ...en, ...kr, r.q9 ?? '', r.respondent_name ?? '']
+        .map(cell)
+        .join(',')
     })
     const blob = new Blob(['﻿' + [header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -270,6 +274,8 @@ function Admin({ lang, onLogout }) {
                       <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.time}</th>
                       <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.ipAddress}</th>
                       <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.answersShort}</th>
+                      <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.nameLabel}</th>
+                      <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.feedbackLabel}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -283,6 +289,10 @@ function Admin({ lang, onLogout }) {
                         </td>
                         <td className="px-5 py-3 tabular-nums tracking-widest text-ink-2">
                           {questions.map((q) => r[q.id] ?? '–').join(' ')}
+                        </td>
+                        <td className="whitespace-nowrap px-5 py-3 text-ink-2">{r.respondent_name || '—'}</td>
+                        <td className="max-w-64 truncate px-5 py-3 text-ink-2" title={r.q9 || ''}>
+                          {r.q9 || '—'}
                         </td>
                       </tr>
                     ))}

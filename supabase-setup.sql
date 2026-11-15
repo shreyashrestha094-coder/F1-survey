@@ -23,3 +23,7 @@ create policy "anon can select"
   on responses for select
   to anon
   using (true);
+
+-- Migration: open-ended final question (name + feedback)
+alter table responses add column if not exists q9 text;
+alter table responses add column if not exists respondent_name text;

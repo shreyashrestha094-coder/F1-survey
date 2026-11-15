@@ -120,7 +120,8 @@ Each submission goes through this exact pipeline:
 [11] "Export CSV" builds a UTF-8 CSV in the browser and downloads it.
      Columns: created_at, ip_address, q1..q8 (numeric option codes for
      analysis), then q1_en..q8_en and q1_kr..q8_kr (the answer text in
-     English and Korean) so the file is readable without a codebook.
+     English and Korean) so the file is readable without a codebook,
+     plus q9_feedback and respondent_name from the open question.
      Analysis (e.g., SPSS / Excel / Python) uses this file.
 ```
 
@@ -136,6 +137,9 @@ Each submission goes through this exact pipeline:
 | Q6 | Can a good car carry an average driver? | **Likert** | Diverging stacked bar |
 | Q7 | Do results change after a team switch? | **Likert** | Diverging stacked bar |
 | Q8 | What matters when supporting a team? | Nominal, 6 options | Bar |
+| Q9 | "If you experienced any difficulties or have any questions while taking this survey, please let us know." | **Open-ended** (free text) + optional name field | Respondents table / CSV only |
+
+Q9 is a final open-ended stage: an optional name field and an optional free-text message (max 1000 chars). Both can be left empty and the survey still submits — the primary data (Q1–Q8) never depends on it.
 
 ## 5. Data Storage Schema
 
@@ -146,7 +150,9 @@ create table responses (
   ip_address  text,        -- public IP via ipify (may be null if the lookup fails)
   user_agent  text,        -- browser/device string (for identifying bot/duplicate entries)
   q1 int, q2 int, q3 int, q4 int,          -- 1-based option numbers
-  q5 int, q6 int, q7 int, q8 int
+  q5 int, q6 int, q7 int, q8 int,
+  q9 text,                                 -- optional open feedback (final question)
+  respondent_name text                     -- optional, voluntarily provided
 );
 ```
 
@@ -164,7 +170,7 @@ The full setup script is `supabase-setup.sql` — paste it into the Supabase SQL
 
 This survey is run as an **anonymous** academic survey. The following rules are the project's privacy policy:
 
-1. **No direct identifiers.** The survey never asks for name, email, phone, student ID, or any account login. Responses cannot be linked back to a person by the content of the answers.
+1. **No required identifiers.** The survey never asks for email, phone, student ID, or any account login. The only personal field is an **optional, voluntarily provided name** on the final open question — a respondent may complete the entire survey anonymously. Responses without a name cannot be linked to a person at all; a named response is linked only to whatever that person chose to write about themselves.
 2. **What technical data is kept, and why:**
    - **IP address** — captured to detect duplicate submissions and abuse (e.g., one person flooding the survey). Public IPs are routinely shared by many households/devices (NAT), so an IP is *not* proof of identity.
    - **User agent** — browser/device string, used to recognize obvious bot or test entries.

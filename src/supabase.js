@@ -32,10 +32,12 @@ async function supabaseFetch(path, options = {}) {
 }
 
 // Submit one survey response. `answers` is { q1: 2, q2: 5, ... } (1-based option numbers).
-export async function submitResponse(answers) {
+// `extras` carries the optional open question: { q9, respondent_name }.
+export async function submitResponse(answers, extras = {}) {
   const ip = await getIpAddress()
   const row = {
     ...answers,
+    ...extras,
     ip_address: ip,
     user_agent: navigator.userAgent,
   }

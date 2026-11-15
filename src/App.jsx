@@ -75,9 +75,11 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   const [showError, setShowError] = useState(false)
   const [shakeNext, setShakeNext] = useState(false)
   const headingRef = useRef(null)
-  const q = questions[index]
+  const TOTAL = questions.length + 1 // 8 choice questions + 1 open question
+  const isOpen = index >= questions.length
+  const q = questions[Math.min(index, questions.length - 1)]
   const selected = answers[q.id]
-  const isLast = index === questions.length - 1
+  const isLast = isOpen
 
   // focus heading + scroll top on question change (a11y)
   useEffect(() => {
@@ -103,6 +105,10 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   }
 
   const handleNext = () => {
+    if (isOpen) {
+      onSubmit()
+      return
+    }
     if (selected === undefined) {
       setShowError(true)
       setShakeNext(true)
@@ -119,74 +125,113 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
   // keyboard: 1-9 select, arrows navigate, Enter next/submit
   useEffect(() => {
     const onKey = (e) => {
-      if (e.target.tagName === 'INPUT') return
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
       const n = parseInt(e.key, 10)
-      if (n >= 1 && n <= getOptions(q, lang).length) handleSelect(n - 1)
+      if (!isOpen && n >= 1 && n <= getOptions(q, lang).length) handleSelect(n - 1)
       else if (e.key === 'ArrowRight' && !isLast) go(index + 1)
       else if (e.key === 'ArrowLeft' && index > 0) go(index - 1)
-      else if (e.key === 'Enter') handleNext()
+      else if (e.key === 'Enter' && !isOpen) handleNext()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
 
   const answered = questions.filter((x) => answers[x.id] !== undefined).length
-  const progress = ((index + (selected !== undefined ? 1 : 0)) / questions.length) * 100
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-16">
       {/* race-track progress: car moves one corner per question */}
-      <RaceProgress index={index} lang={lang} />
+      <RaceProgress index={index} total={TOTAL} lang={lang} />
       <div className="mt-1 flex items-center justify-between">
         <span className="font-display text-sm font-semibold tracking-wider text-ink-muted">
-          {t.qOf(index + 1, questions.length)}
+          {t.qOf(index + 1, TOTAL)}
         </span>
         <span className="font-display text-xs tabular-nums text-ink-muted">{answered}/{questions.length}</span>
       </div>
 
-      <div key={q.id} className={dir === 'next' ? 'anim-next' : 'anim-back'}>
-        <h2
-          ref={headingRef}
-          tabIndex={-1}
-          className="font-display mt-10 text-xl font-bold leading-snug outline-none sm:text-2xl"
-        >
-          <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
-          {lang === 'en' ? q.en : lang === 'kr' ? q.kr : lang === 'zh' ? q.zh : lang === 'vi' ? q.vi : q.mn}
-        </h2>
+      <div key={isOpen ? 'open' : q.id} className={dir === 'next' ? 'anim-next' : 'anim-back'}>
+        {!isOpen ? (
+          <>
+            <h2
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-display mt-10 text-xl font-bold leading-snug outline-none sm:text-2xl"
+            >
+              <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
+              {lang === 'en' ? q.en : lang === 'kr' ? q.kr : lang === 'zh' ? q.zh : lang === 'vi' ? q.vi : q.mn}
+            </h2>
 
-        <div className="mt-7 space-y-3.5">
-          {getOptions(q, lang).map((opt, i) => {
-            const active = selected === i
-            const label = opt.label ?? (lang === 'en' ? opt.en : lang === 'kr' ? opt.kr : lang === 'zh' ? opt.zh : lang === 'vi' ? opt.vi : opt.mn)
-            return (
-              <button
-                key={i}
-                onClick={() => handleSelect(i)}
-                className={`opt cut-corner-sm group flex w-full items-center gap-4 border-2 px-5 py-4 text-left ${
-                  active
-                    ? 'opt-active border-f1 bg-f1/10 font-semibold text-ink'
-                    : 'border-hairline bg-surface text-ink-2 hover:border-f1/50 hover:bg-surface/70 hover:pl-6'
-                }`}
-              >
-                <span
-                  className={`font-display flex h-8 w-8 shrink-0 items-center justify-center text-sm font-bold transition ${
-                    active ? 'bg-f1 text-white' : 'bg-hairline text-ink-muted group-hover:bg-baseline group-hover:text-ink-2'
-                  }`}
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
-                >
-                  {i + 1}
-                </span>
-                <span>{label}</span>
-                {active && (
-                  <span className="ml-auto font-display text-f1">▸</span>
-                )}
-              </button>
-            )
-          })}
-        </div>
+            <div className="mt-7 space-y-3.5">
+              {getOptions(q, lang).map((opt, i) => {
+                const active = selected === i
+                const label = opt.label ?? (lang === 'en' ? opt.en : lang === 'kr' ? opt.kr : lang === 'zh' ? opt.zh : lang === 'vi' ? opt.vi : opt.mn)
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleSelect(i)}
+                    className={`opt cut-corner-sm group flex w-full items-center gap-4 border-2 px-5 py-4 text-left ${
+                      active
+                        ? 'opt-active border-f1 bg-f1/10 font-semibold text-ink'
+                        : 'border-hairline bg-surface text-ink-2 hover:border-f1/50 hover:bg-surface/70 hover:pl-6'
+                    }`}
+                  >
+                    <span
+                      className={`font-display flex h-8 w-8 shrink-0 items-center justify-center text-sm font-bold transition ${
+                        active ? 'bg-f1 text-white' : 'bg-hairline text-ink-muted group-hover:bg-baseline group-hover:text-ink-2'
+                      }`}
+                      style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span>{label}</span>
+                    {active && (
+                      <span className="ml-auto font-display text-f1">▸</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
 
-        {showError && (
-          <p className="mt-5 font-display text-sm font-semibold text-chart-red">⚠ {t.pickOne}</p>
+            {showError && (
+              <p className="mt-5 font-display text-sm font-semibold text-chart-red">⚠ {t.pickOne}</p>
+            )}
+          </>
+        ) : (
+          <>
+            <h2
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-display mt-10 text-xl font-bold leading-snug outline-none sm:text-2xl"
+            >
+              <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
+              {t.openTitle}
+            </h2>
+            <p className="mt-3 text-sm text-ink-muted">{t.optional}</p>
+
+            <label className="font-display mt-7 block text-sm font-semibold uppercase tracking-wider text-ink-muted">
+              {t.nameLabel} · {t.optional}
+            </label>
+            <input
+              type="text"
+              value={answers.respondent_name || ''}
+              onChange={(e) => setAnswers({ ...answers, respondent_name: e.target.value })}
+              placeholder={t.namePlaceholder}
+              maxLength={100}
+              className="mt-2 w-full border border-hairline bg-surface px-4 py-3.5 text-ink outline-none transition placeholder:text-ink-muted focus:border-f1"
+            />
+
+            <label className="font-display mt-6 block text-sm font-semibold uppercase tracking-wider text-ink-muted">
+              {t.feedbackLabel} · {t.optional}
+            </label>
+            <textarea
+              value={answers.q9 || ''}
+              onChange={(e) => setAnswers({ ...answers, q9: e.target.value })}
+              placeholder={t.feedbackPlaceholder}
+              rows={5}
+              maxLength={1000}
+              className="mt-2 w-full resize-y border border-hairline bg-surface px-4 py-3.5 text-ink outline-none transition placeholder:text-ink-muted focus:border-f1"
+            />
+          </>
         )}
 
         <div className="mt-10 flex gap-3">
@@ -201,9 +246,9 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
           <button
             onClick={handleNext}
             disabled={submitting}
-            aria-disabled={selected === undefined}
+            aria-disabled={!isOpen && selected === undefined}
             className={`cut-corner flex-1 bg-f1 py-3.5 font-display text-lg font-bold uppercase italic tracking-wide text-white transition hover:brightness-110 active:scale-[0.99] disabled:opacity-60 ${
-              selected === undefined ? 'opacity-50' : ''
+              !isOpen && selected === undefined ? 'opacity-50' : ''
             } ${shakeNext ? 'shake' : ''}`}
           >
             {submitting ? '…' : isLast ? `${t.submit} →` : `${t.next} →`}
@@ -336,8 +381,12 @@ export default function App() {
   const handleSubmit = async () => {
     setSubmitting(true)
     const numbered = Object.fromEntries(questions.map((q) => [q.id, answers[q.id] + 1]))
+    const extras = {
+      q9: answers.q9?.trim() || null,
+      respondent_name: answers.respondent_name?.trim() || null,
+    }
     try {
-      await submitResponse(numbered)
+      await submitResponse(numbered, extras)
     } catch (err) {
       console.error('Submission failed', err)
     }
