@@ -121,6 +121,7 @@ function Admin({ lang, onLogout }) {
   const t = ui[lang]
   const [rows, setRows] = useState(null)
   const [error, setError] = useState(false)
+  const [expanded, setExpanded] = useState(null) // response id with open feedback
 
   const load = async () => {
     setError(false)
@@ -297,8 +298,21 @@ function Admin({ lang, onLogout }) {
                           {questions.map((q) => r[q.id] ?? '–').join(' ')}
                         </td>
                         <td className="whitespace-nowrap px-5 py-3 text-ink-2">{r.respondent_name || '—'}</td>
-                        <td className="max-w-64 truncate px-5 py-3 text-ink-2" title={r.q9 || ''}>
-                          {r.q9 || '—'}
+                        <td
+                          onClick={() => r.q9 && setExpanded(expanded === r.id ? null : r.id)}
+                          className={`max-w-80 px-5 py-3 text-ink-2 ${
+                            r.q9 ? 'cursor-pointer hover:text-ink' : ''
+                          }`}
+                          title={r.q9 && expanded !== r.id ? r.q9 : ''}
+                        >
+                          {expanded === r.id ? (
+                            <span className="block max-w-80 whitespace-pre-wrap break-words font-semibold text-ink">
+                              {r.q9}
+                              <span className="font-display ml-2 text-[10px] uppercase text-ink-muted">▾ close</span>
+                            </span>
+                          ) : (
+                            <span className="block truncate">{r.q9 || '—'}</span>
+                          )}
                         </td>
                       </tr>
                     ))}
