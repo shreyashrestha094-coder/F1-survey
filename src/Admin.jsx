@@ -31,9 +31,9 @@ function useCountUp(target, duration = 600) {
 function StatTile({ label, value }) {
   const counted = useCountUp(value)
   return (
-    <div className="cut-corner-sm border border-hairline bg-surface px-5 py-4">
+    <div className="cut-corner-sm border border-hairline bg-surface px-6 py-5">
       <p className="font-display text-xs font-semibold uppercase tracking-wider text-ink-muted">{label}</p>
-      <p className="font-display mt-1 text-3xl font-bold tabular-nums text-ink">{counted}</p>
+      <p className="font-display mt-2 text-3xl font-bold tabular-nums text-ink">{counted}</p>
     </div>
   )
 }
@@ -43,9 +43,9 @@ function BarChart({ q, lang, counts, total }) {
   const opts = getOptions(q, lang)
   const max = Math.max(...counts, 1)
   return (
-    <div className="border border-hairline bg-surface p-5">
+    <div className="border border-hairline bg-surface p-6">
       <h3 className="font-display text-sm font-bold leading-snug">{text(q)}</h3>
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-5 space-y-3">
         {opts.map((opt, i) => {
           const count = counts[i]
           const pct = total ? Math.round((count / total) * 100) : 0
@@ -54,12 +54,14 @@ function BarChart({ q, lang, counts, total }) {
               <span className="w-36 shrink-0 truncate text-ink-2 sm:w-52" title={text(opt)}>
                 {i + 1}. {text(opt)}
               </span>
-              <div className="relative h-5 flex-1 bg-hairline/40">
-                <div
-                  className="bar-grow absolute inset-y-0 left-0 bg-chart-red transition-all group-hover:brightness-125"
-                  style={{ width: `${(count / max) * 100}%` }}
-                />
-                <span className="absolute left-full top-1/2 ml-2 -translate-y-1/2 whitespace-nowrap font-semibold tabular-nums text-ink-2">
+              <div className="flex flex-1 items-center gap-2.5">
+                <div className="relative h-5 flex-1 bg-hairline/40">
+                  <div
+                    className="bar-grow absolute inset-y-0 left-0 bg-chart-red transition-all group-hover:brightness-125"
+                    style={{ width: `${(count / max) * 100}%` }}
+                  />
+                </div>
+                <span className="w-16 shrink-0 whitespace-nowrap text-right font-semibold tabular-nums text-ink-2">
                   {count} ({pct}%)
                 </span>
               </div>
@@ -67,7 +69,7 @@ function BarChart({ q, lang, counts, total }) {
           )
         })}
       </div>
-      <p className="mt-3 text-right text-[11px] text-ink-muted">n = {total}</p>
+      <p className="mt-4 text-right text-[11px] text-ink-muted">n = {total}</p>
     </div>
   )
 }
@@ -83,9 +85,9 @@ function DivergingChart({ q, lang, counts, total }) {
     { pct: agreePct, cls: 'bg-chart-agree', label: lang === 'en' ? 'Agree' : lang === 'kr' ? '그렇다' : lang === 'zh' ? '同意' : lang === 'vi' ? 'Đồng ý' : 'Зөвшөөрөх' },
   ]
   return (
-    <div className="border border-hairline bg-surface p-5">
+    <div className="border border-hairline bg-surface p-6">
       <h3 className="font-display text-sm font-bold leading-snug">{text(q)}</h3>
-      <div className="mt-4 flex h-7 overflow-hidden" style={{ gap: 2 }}>
+      <div className="mt-6 flex h-7 overflow-hidden" style={{ gap: 2 }}>
         {segments.map(
           (s, i) =>
             s.pct > 0 && (
@@ -98,7 +100,7 @@ function DivergingChart({ q, lang, counts, total }) {
             ),
         )}
       </div>
-      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-ink-2">
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[11px] text-ink-2">
         {segments.map(
           (s, i) =>
             s.pct > 0 && (
@@ -169,7 +171,7 @@ function Admin({ lang, onLogout }) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold uppercase italic">
           <span className="mr-3 inline-block h-6 w-1.5 bg-f1 align-middle" />
@@ -205,7 +207,7 @@ function Admin({ lang, onLogout }) {
 
       {rows && stats && (
         <>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatTile label={t.totalResponses} value={stats.total} />
             <StatTile label={t.last24h} value={stats.last24h} />
             <StatTile label={t.last7d} value={stats.last7d} />
@@ -213,16 +215,16 @@ function Admin({ lang, onLogout }) {
           </div>
 
           {rows.length === 0 && (
-            <p className="mt-8 text-center text-ink-muted">{t.noResponses}</p>
+            <p className="mt-10 text-center text-ink-muted">{t.noResponses}</p>
           )}
 
           {rows.length > 0 && (
             <>
-              <h2 className="font-display mt-10 text-lg font-bold uppercase italic">
+              <h2 className="font-display mt-12 text-lg font-bold uppercase italic">
                 <span className="mr-2 inline-block h-4 w-1 bg-f1 align-middle" />
                 {t.responsesByQuestion}
               </h2>
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <div className="mt-5 grid gap-5 lg:grid-cols-2">
                 {questions.map((q) => {
                   const counts = getOptions(q, lang).map(
                     (_, i) => rows.filter((r) => r[q.id] === i + 1).length,
@@ -235,29 +237,29 @@ function Admin({ lang, onLogout }) {
                 })}
               </div>
 
-              <h2 className="font-display mt-10 text-lg font-bold uppercase italic">
+              <h2 className="font-display mt-12 text-lg font-bold uppercase italic">
                 <span className="mr-2 inline-block h-4 w-1 bg-f1 align-middle" />
                 {t.respondents}
               </h2>
-              <div className="mt-4 overflow-x-auto border border-hairline bg-surface">
+              <div className="mt-5 overflow-x-auto border border-hairline bg-surface">
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-hairline text-ink-muted">
-                      <th className="px-4 py-3 font-display font-semibold uppercase tracking-wider">{t.time}</th>
-                      <th className="px-4 py-3 font-display font-semibold uppercase tracking-wider">{t.ipAddress}</th>
-                      <th className="px-4 py-3 font-display font-semibold uppercase tracking-wider">{t.answersShort}</th>
+                      <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.time}</th>
+                      <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.ipAddress}</th>
+                      <th className="px-5 py-4 font-display font-semibold uppercase tracking-wider">{t.answersShort}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rows.map((r) => (
                       <tr key={r.id} className="border-b border-hairline/50 last:border-0 transition hover:bg-hairline/20">
-                        <td className="whitespace-nowrap px-4 py-2.5 tabular-nums text-ink-2">
+                        <td className="whitespace-nowrap px-5 py-3 tabular-nums text-ink-2">
                           {new Date(r.created_at).toLocaleString(lang === 'en' ? 'en-US' : lang === 'zh' ? 'zh-CN' : lang === 'vi' ? 'vi-VN' : lang === 'mn' ? 'mn-MN' : 'ko-KR')}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-2.5 tabular-nums text-ink-2">
+                        <td className="whitespace-nowrap px-5 py-3 tabular-nums text-ink-2">
                           {r.ip_address ?? '—'}
                         </td>
-                        <td className="px-4 py-2.5 tabular-nums tracking-widest text-ink-2">
+                        <td className="px-5 py-3 tabular-nums tracking-widest text-ink-2">
                           {questions.map((q) => r[q.id] ?? '–').join(' ')}
                         </td>
                       </tr>

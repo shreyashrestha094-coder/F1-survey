@@ -5,6 +5,23 @@ import { submitResponse } from './supabase.js'
 import { TopBar } from './components.jsx'
 import { AdminGate } from './Admin.jsx'
 
+const STRIP = [
+  '/images/race-start.jpg',
+  '/images/monaco.jpg',
+  '/images/car-reveal.jpg',
+  '/images/driver.png',
+]
+const QUESTION_IMG = [
+  '/images/race-start.jpg',
+  '/images/monaco.jpg',
+  '/images/car-reveal.jpg',
+  '/images/driver.png',
+  '/images/race-start.jpg',
+  '/images/monaco.jpg',
+  '/images/car-reveal.jpg',
+  '/images/race-start.jpg',
+]
+
 function Intro({ lang, onStart }) {
   const t = ui[lang]
   return (
@@ -55,6 +72,19 @@ function Intro({ lang, onStart }) {
           >
             {t.start} →
           </button>
+
+          {/* photo strip */}
+          <div className="mt-8 grid grid-cols-4 gap-2">
+            {STRIP.map((src, i) => (
+              <div key={i} className="cut-corner-sm h-20 overflow-hidden sm:h-24">
+                <img
+                  src={src}
+                  alt=""
+                  className="h-full w-full object-cover object-[50%_30%] opacity-80 transition duration-300 hover:scale-105 hover:opacity-100"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -141,12 +171,24 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
       </div>
 
       <div key={q.id} className={dir === 'next' ? 'anim-next' : 'anim-back'}>
-        <h2 className="font-display mt-10 text-xl font-bold leading-snug sm:text-2xl">
-          <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
+        {/* question image accent band */}
+        <div className="cut-corner-sm relative mt-10 h-16 overflow-hidden sm:h-20">
+          <img
+            src={QUESTION_IMG[index]}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-[50%_30%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/60 to-carbon/20" />
+          <span className="font-display absolute bottom-2 left-4 text-4xl font-bold italic text-white/90 tabular-nums">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        </div>
+
+        <h2 className="font-display mt-6 text-xl font-bold leading-snug sm:text-2xl">
           {lang === 'en' ? q.en : lang === 'kr' ? q.kr : lang === 'zh' ? q.zh : lang === 'vi' ? q.vi : q.mn}
         </h2>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-7 space-y-3.5">
           {getOptions(q, lang).map((opt, i) => {
             const active = selected === i
             const label = opt.label ?? (lang === 'en' ? opt.en : lang === 'kr' ? opt.kr : lang === 'zh' ? opt.zh : lang === 'vi' ? opt.vi : opt.mn)
@@ -154,31 +196,34 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
               <button
                 key={i}
                 onClick={() => handleSelect(i)}
-                className={`opt cut-corner-sm flex w-full items-center gap-4 border-2 px-5 py-4 text-left ${
+                className={`opt cut-corner-sm group flex w-full items-center gap-4 border-2 px-5 py-4 text-left ${
                   active
                     ? 'border-f1 bg-f1/10 font-semibold text-ink'
-                    : 'border-hairline bg-surface text-ink-2 hover:border-baseline hover:bg-surface/70'
+                    : 'border-hairline bg-surface text-ink-2 hover:border-f1/50 hover:bg-surface/70 hover:pl-6'
                 }`}
               >
                 <span
-                  className={`font-display flex h-7 w-7 shrink-0 items-center justify-center text-sm font-bold transition ${
-                    active ? 'bg-f1 text-white' : 'bg-hairline text-ink-muted'
+                  className={`font-display flex h-8 w-8 shrink-0 items-center justify-center text-sm font-bold transition ${
+                    active ? 'bg-f1 text-white' : 'bg-hairline text-ink-muted group-hover:bg-baseline group-hover:text-ink-2'
                   }`}
                   style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
                 >
                   {i + 1}
                 </span>
                 <span>{label}</span>
+                {active && (
+                  <span className="ml-auto font-display text-f1">▸</span>
+                )}
               </button>
             )
           })}
         </div>
 
         {showError && (
-          <p className="mt-4 font-display text-sm font-semibold text-chart-red">⚠ {t.pickOne}</p>
+          <p className="mt-5 font-display text-sm font-semibold text-chart-red">⚠ {t.pickOne}</p>
         )}
 
-        <div className="mt-8 flex gap-3">
+        <div className="mt-10 flex gap-3">
           {index > 0 && (
             <button
               onClick={() => go(index - 1)}

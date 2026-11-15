@@ -69,7 +69,7 @@ body {
 
 /* option select wash */
 .opt {
-  transition: border-color 180ms, background-color 180ms, transform 120ms;
+  transition: border-color 180ms, background-color 180ms, transform 120ms, padding 180ms;
 }
 .opt:active {
   transform: scale(0.985);
