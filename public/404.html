@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      // GitHub Pages SPA shim: unknown paths redirect into the hash router.
+      // /F1-survey/admin  ->  /F1-survey/#/admin   (hidden dashboard entry)
+      (function () {
+        var seg = location.pathname.replace(/\/+$/, '').split('/').pop()
+        if (seg === 'admin') {
+          location.replace('/F1-survey/#/admin')
+        } else {
+          location.replace('/F1-survey/')
+        }
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>

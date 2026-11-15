@@ -99,7 +99,10 @@ Each submission goes through this exact pipeline:
 **How the admin reads the data:**
 
 ```
-[7] Organizer opens  …/F1-survey/#/admin
+[7] Organizer opens the hidden dashboard URL:
+        …/F1-survey/#/admin   (or …/F1-survey/admin — a 404-page
+        shim redirects it into the hash route)
+    There is no visible button; only the organizer knows the URL.
         ▼
 [8] Password gate — compared against a constant in the app bundle,
     success stored in sessionStorage (dies when the tab closes)

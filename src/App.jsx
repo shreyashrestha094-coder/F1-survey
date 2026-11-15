@@ -348,7 +348,7 @@ export default function App() {
   if (stage === 'admin') {
     return (
       <div className="min-h-dvh bg-carbon">
-        <TopBar lang={lang} setLang={setLang} showAdmin={false} />
+        <TopBar lang={lang} setLang={setLang} />
         <AdminGate lang={lang} onLogout={() => { window.location.hash = '' }} />
         <div className="fixed bottom-3 left-3 z-10">
           <a href="#" className="text-[11px] font-semibold text-ink-muted underline hover:text-ink">

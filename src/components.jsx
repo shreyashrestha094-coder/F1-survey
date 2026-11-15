@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { LANGS } from './data/questions.js'
-import { ui } from './i18n.js'
 
 export function LangSelect({ lang, setLang }) {
   const [open, setOpen] = useState(false)
@@ -46,8 +45,7 @@ export function LangSelect({ lang, setLang }) {
   )
 }
 
-export function TopBar({ lang, setLang, showAdmin = true }) {
-  const t = ui[lang]
+export function TopBar({ lang, setLang }) {
   return (
     <header className="sticky top-0 z-30 border-b border-hairline bg-carbon/85 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
@@ -59,17 +57,7 @@ export function TopBar({ lang, setLang, showAdmin = true }) {
             Survey
           </span>
         </a>
-        <div className="flex items-center gap-2.5">
-          <LangSelect lang={lang} setLang={setLang} />
-          {showAdmin && (
-            <a
-              href="#/admin"
-              className="cut-corner-sm border border-hairline bg-surface/80 px-3.5 py-1.5 text-sm font-semibold text-ink-2 backdrop-blur transition hover:border-f1 hover:text-f1"
-            >
-              ⚙ {t.admin}
-            </a>
-          )}
-        </div>
+        <LangSelect lang={lang} setLang={setLang} />
       </div>
     </header>
   )
