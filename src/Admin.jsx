@@ -3,7 +3,7 @@ import { questions, getOptions } from './data/questions.js'
 import { ui } from './i18n.js'
 import { fetchResponses, supabaseConfigured } from './supabase.js'
 
-const ADMIN_PASSWORD = '1234'
+const ADMIN_PASSWORD = 'f1@shreya'
 
 const LIKERT = ['q5', 'q6', 'q7']
 
