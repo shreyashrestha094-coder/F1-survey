@@ -56,6 +56,7 @@ Rules:
 | Element | Spec |
 |---|---|
 | Question change | Slide-in-right + fade, 280ms ease-out; back = slide-in-left. Heading focused + scrolled to top each step (a11y). |
+| Race-track progress | Dashed SVG circuit, 8 waypoint corners (done = red fill, current = white + red ring, pulsing), F1 car polygon drives along the path (rAF, 520ms cubic ease-out, rotated to path tangent). |
 | Option select | 180ms — border snaps to red, background washes `f1-red` at 10%, marker fills, `pop` scale 260ms. |
 | Auto-advance | 180ms hold after select, then advance. |
 | Invalid Next | Button grayed (`aria-disabled`) until an answer is chosen; clicking shakes it (200ms) + inline coral warning. |

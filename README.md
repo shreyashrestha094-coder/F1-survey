@@ -210,6 +210,7 @@ Backend setup: create a free Supabase project → run `supabase-setup.sql` in th
 
 ## 9. Design Reference
 
+Visual identity follows `docs/design.md`: F1 Red `#E10600` on Carbon Black `#15151E`, angular cut-corner shapes, italic uppercase display type, and a race-track progress metaphor for question navigation. Chart colors were validated for color-vision-deficiency safety and contrast; the Likert neutral segment is deliberately gray with direct percentage labels so no meaning depends on color alone.
 
 ---
 
