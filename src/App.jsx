@@ -5,23 +5,6 @@ import { submitResponse } from './supabase.js'
 import { TopBar } from './components.jsx'
 import { AdminGate } from './Admin.jsx'
 
-const STRIP = [
-  '/images/race-start.jpg',
-  '/images/monaco.jpg',
-  '/images/car-reveal.jpg',
-  '/images/driver.png',
-]
-const QUESTION_IMG = [
-  '/images/race-start.jpg',
-  '/images/monaco.jpg',
-  '/images/car-reveal.jpg',
-  '/images/driver.png',
-  '/images/race-start.jpg',
-  '/images/monaco.jpg',
-  '/images/car-reveal.jpg',
-  '/images/race-start.jpg',
-]
-
 function Intro({ lang, onStart }) {
   const t = ui[lang]
   return (
@@ -72,19 +55,6 @@ function Intro({ lang, onStart }) {
           >
             {t.start} →
           </button>
-
-          {/* photo strip */}
-          <div className="mt-8 grid grid-cols-4 gap-2">
-            {STRIP.map((src, i) => (
-              <div key={i} className="cut-corner-sm h-20 overflow-hidden sm:h-24">
-                <img
-                  src={src}
-                  alt=""
-                  className="h-full w-full object-cover object-[50%_30%] opacity-80 transition duration-300 hover:scale-105 hover:opacity-100"
-                />
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -171,20 +141,8 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
       </div>
 
       <div key={q.id} className={dir === 'next' ? 'anim-next' : 'anim-back'}>
-        {/* question image accent band */}
-        <div className="cut-corner-sm relative mt-10 h-16 overflow-hidden sm:h-20">
-          <img
-            src={QUESTION_IMG[index]}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-[50%_30%]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/60 to-carbon/20" />
-          <span className="font-display absolute bottom-2 left-4 text-4xl font-bold italic text-white/90 tabular-nums">
-            {String(index + 1).padStart(2, '0')}
-          </span>
-        </div>
-
-        <h2 className="font-display mt-6 text-xl font-bold leading-snug sm:text-2xl">
+        <h2 className="font-display mt-10 text-xl font-bold leading-snug sm:text-2xl">
+          <span className="mr-3 inline-block h-6 w-1 bg-f1 align-middle" />
           {lang === 'en' ? q.en : lang === 'kr' ? q.kr : lang === 'zh' ? q.zh : lang === 'vi' ? q.vi : q.mn}
         </h2>
 
