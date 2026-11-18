@@ -106,6 +106,10 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
 
   const handleNext = () => {
     if (isOpen) {
+      if (!answers.respondent_name?.trim()) {
+        setShowError(true)
+        return
+      }
       onSubmit()
       return
     }
@@ -209,16 +213,28 @@ function Survey({ lang, setLang, answers, setAnswers, onSubmit, submitting }) {
             <p className="mt-3 text-sm text-ink-muted">{t.optional}</p>
 
             <label className="font-display mt-7 block text-sm font-semibold uppercase tracking-wider text-ink-muted">
-              {t.nameLabel} · {t.optional}
+              {t.nameLabel} *
             </label>
             <input
               type="text"
               value={answers.respondent_name || ''}
-              onChange={(e) => setAnswers({ ...answers, respondent_name: e.target.value })}
+              required
+              aria-required="true"
+              aria-invalid={showError && !answers.respondent_name?.trim()}
+              onChange={(e) => {
+                setAnswers({ ...answers, respondent_name: e.target.value })
+                if (e.target.value.trim()) setShowError(false)
+              }}
               placeholder={t.namePlaceholder}
               maxLength={100}
               className="mt-2 w-full border border-hairline bg-surface px-4 py-3.5 text-ink outline-none transition placeholder:text-ink-muted focus:border-f1"
             />
+
+            {showError && !answers.respondent_name?.trim() && (
+              <p role="alert" className="mt-2 text-sm font-semibold text-chart-red">
+                {lang === 'kr' ? '이름을 입력해 주세요.' : lang === 'zh' ? '请输入姓名。' : lang === 'vi' ? 'Vui lòng nhập tên.' : lang === 'mn' ? 'Нэрээ оруулна уу.' : 'Please enter your name.'}
+              </p>
+            )}
 
             <label className="font-display mt-6 block text-sm font-semibold uppercase tracking-wider text-ink-muted">
               {t.feedbackLabel} · {t.optional}
@@ -379,6 +395,7 @@ export default function App() {
   }, [])
 
   const handleSubmit = async () => {
+    if (!answers.respondent_name?.trim() || submitting) return
     setSubmitting(true)
     const numbered = Object.fromEntries(questions.map((q) => [q.id, answers[q.id] + 1]))
     const extras = {
@@ -439,3 +456,5 @@ export default function App() {
     </div>
   )
 }
+
+ 
